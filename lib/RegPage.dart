@@ -1,30 +1,16 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutterapp/AuthBlocs.dart';
 
-import 'main.dart';
 
-class RegistrationView extends StatefulWidget {
-  const RegistrationView({Key? key}) : super(key: key);
-
-  @override
-  RegistrationPage createState() => RegistrationPage();
-}
-
-class RegistrationPage extends State<RegistrationView> {
-  bool loaderStatus = false;
+class RegistrationView extends StatelessWidget {
+  RegistrationView({Key? key}) : super(key: key);
   String userName = "";
   String password = "";
-
-  void changeStatus(){
-    setState((){
-      if (loaderStatus) {
-        loaderStatus = false;
-      } else {
-        loaderStatus = true;
-      }
-    });
-  }
+  LoaderBloc loaderBloc = LoaderBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -85,26 +71,32 @@ class RegistrationPage extends State<RegistrationView> {
 
             const SizedBox(height: 20),
             MaterialButton(onPressed: () async {
-              changeStatus();
+              loaderBloc.loaderEventSink.add(LoaderStatus.turnOn);
               try {
                 final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: userName, password: password);
                 final email = userCredential.user?.email.toString();
-                changeStatus();
+                loaderBloc.loaderEventSink.add(LoaderStatus.turnOff);
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Registered Successfully ${email ?? ""}")));
                 Navigator.pop(context);
               } on FirebaseAuthException catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.code)));
-                changeStatus();
+                loaderBloc.loaderEventSink.add(LoaderStatus.turnOff);
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Something wrong")));
-                changeStatus();
+                loaderBloc.loaderEventSink.add(LoaderStatus.turnOff);
               }
             }, color: Colors.deepOrange , textColor: Colors.white, elevation: 2, height: 50, minWidth: 150,
                 child: const Text("Sign-Up", style: TextStyle(fontSize: 24),)
             ),
 
             const Spacer(),
-            Visibility(visible: loaderStatus,child: const SpinKitChasingDots(color: Colors.deepOrange, size: 80),),
+            StreamBuilder<bool>(
+                stream: loaderBloc.loaderStream,
+                builder: (context, snapshot) {
+                  return
+                      // Text("${snapshot.data}");
+                    Visibility(visible: snapshot.data ?? false, child: const SpinKitChasingDots(color: Colors.deepOrange, size: 80));
+                }),
             const Spacer(),
           ],
         ),
