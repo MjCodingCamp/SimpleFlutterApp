@@ -99,7 +99,7 @@ class FirstPage extends StatelessWidget {
                   if (userEmail != null) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Login Successful")));
                     loaderBloc.loaderEventSink.add(LoaderStatus.turnOff);
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(title: userEmail)));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeView(userEmail)));
                   }
 
                 } on FirebaseAuthException catch (e) {
