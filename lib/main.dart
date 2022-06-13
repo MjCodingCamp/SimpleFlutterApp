@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutterapp/AuthBlocs.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutterapp/Bloc/InternetBloc/InternetBloc.dart';
+import 'package:flutterapp/Bloc/InternetBloc/InternetState.dart';
 import 'HomePage.dart';
 import 'RegPage.dart';
 
@@ -17,8 +20,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
-      home:  FirstPage(),
+    return BlocProvider(create: (context) => InternetBloc(),
+      child: MaterialApp(
+        home:  FirstPage(),
+      ),
     );
   }
 
@@ -41,7 +46,15 @@ class FirstPage extends StatelessWidget {
           backgroundColor: containerColor,
           appBar: AppBar(
               backgroundColor: Colors.deepOrange,
-              title: const Text("First App"),
+              title:   BlocBuilder<InternetBloc, InternetState>(builder: (context, state) {
+                if (state is InternetGainState) {
+                  return const Text("Connected");
+                } else if (state is InternetLostState) {
+                  return const Text("Not Connected");
+                } else {
+                  return const Text("Loading");
+                }
+              }),
               centerTitle: true
           ),
 
@@ -123,11 +136,53 @@ class FirstPage extends StatelessWidget {
               ),
               const Spacer(),
 
-              MaterialButton(onPressed: () async {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationView()));
-              },  textColor: Colors.deepOrange,
-                  child: const Text("SignUp", style: TextStyle(fontSize: 20),)
-              )
+              // SizedBox(
+              //   height: 0,
+              //   child: BlocListener<InternetBloc, InternetState>(listener: (context, state) {
+              //     if (state is InternetGainState) {
+              //       ScaffoldMessenger.of(context).showSnackBar(
+              //           const SnackBar(content: Text("Internet Connected!"),
+              //               backgroundColor: Colors.green)
+              //       );
+              //     } else if (state is InternetLostState){
+              //       ScaffoldMessenger.of(context).showSnackBar(
+              //           const SnackBar(content: Text("Internet Not Connected!"),
+              //               backgroundColor: Colors.deepOrange)
+              //       );
+              //     }
+              //   }),
+              // ),
+
+              BlocConsumer<InternetBloc, InternetState>(builder: (context, state) {
+                if (state is InternetGainState) {
+                  return MaterialButton(onPressed: () async {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationView()));
+                  },  textColor: Colors.deepOrange,
+                      child: const Text("SignUp", style: TextStyle(fontSize: 20),)
+                  );
+                } else {
+                  return const Text("Please check Internet connection",
+                      style: TextStyle(fontSize: 20, color: Colors.deepOrange));
+                }
+              }, listener: (context, state){
+                if (state is InternetGainState) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Internet Connected!"),
+                          backgroundColor: Colors.green)
+                  );
+                } else if (state is InternetLostState){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Internet Not Connected!"),
+                          backgroundColor: Colors.deepOrange)
+                  );
+                }
+              })
+
+              // MaterialButton(onPressed: () async {
+              //   Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationView()));
+              // },  textColor: Colors.deepOrange,
+              //     child: const Text("SignUp", style: TextStyle(fontSize: 20),)
+              // ),
             ],
           ),
         ),
