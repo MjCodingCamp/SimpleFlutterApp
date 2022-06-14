@@ -5,6 +5,8 @@
       <root url="file://$USER_HOME$/Development/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core-1.17.1" />
       <root url="file://$USER_HOME$/Development/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_web-1.6.4" />
       <root url="file://$USER_HOME$/Development/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_auth_web-3.3.16" />
+      <root url="file://$USER_HOME$/Development/flutter/.pub-cache/hosted/pub.dartlang.org/connectivity_for_web-0.4.0+1" />
+      <root url="file://$USER_HOME$/Development/flutter/.pub-cache/hosted/pub.dartlang.org/connectivity-3.0.6" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
