@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutterapp/Model/Users.dart';
 import 'package:http/http.dart' as http;
-import '../LoginView/main.dart';
+import '../../main.dart';
 
 class HomeView extends StatefulWidget {
   String title;
